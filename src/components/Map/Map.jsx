@@ -78,19 +78,26 @@ const Map = () => {
       }
 
       // Dibuja los departamentos
+      const getDepartmentRawName = (departmentName) =>
+        normalizaNombre(
+          ["SANTAFE DE BOGOTA D.C", "CUNDINAMARCA"].includes(departmentName)
+            ? "Cundinamarca - Bogotá"
+            : departmentName
+        );
+
       g.selectAll("path")
         .data(geoData.features)
         .join("path")
         .attr("d", path)
         .attr("fill", (d) => {
-          const cantidad = conteo.get(normalizaNombre(d.properties.NOMBRE_DPT)) || 0;
+          const cantidad = conteo.get(getDepartmentRawName(d.properties.NOMBRE_DPT)) || 0;
           return cantidad > 0 ? colorScale(cantidad) : "#715A5A";
         })
         .attr("stroke", "#44444E")
         .attr("stroke-width", 1.5)
         .on("mouseover", function (event, d) {
-          const nombre = d.properties.NOMBRE_DPT;
-          const cantidad = conteo.get(normalizaNombre(nombre)) || 0;
+          const nombre = getDepartmentRawName(d.properties.NOMBRE_DPT);
+          const cantidad = conteo.get(nombre) || 0;
           tooltip
             .style("opacity", 1)
             .html(`<strong>${nombre}</strong><br/>${cantidad} desarrolladores`)
